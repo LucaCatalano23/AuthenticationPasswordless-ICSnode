@@ -1,8 +1,6 @@
 from flask import Flask, request, render_template, jsonify
 from pyModbusTCP.client import ModbusClient
-
-SERVER_HOST = '127.0.0.1'
-SERVER_PORT = 502
+from Configs import TAG, Controllers
 
 app = Flask(__name__, static_url_path='/static' , static_folder='static')
 
@@ -19,18 +17,18 @@ def control():
     value = data.get('value')
     
     if name == "flow":
-        client.write_single_coil(1, value)
+        client.write_single_coil(TAG.TAG_LIST[TAG.TANK_FLOW_ACTIVE]["id"], value)
     if name == "drain":
-        client.write_single_coil(2, value)
+        client.write_single_coil(TAG.TAG_LIST[TAG.TANK_DRAIN_ACTIVE]["id"], value)
     
     return 'OK', 200
 
 # Funzione che mi permette di monitorare il livello dell'acqua, il flusso e il deflusso
 @app.route('/monitor', methods=['GET'])
 def monitor():
-    level = client.read_holding_registers(0)[0]
-    flow_rate = client.read_holding_registers(1)[0]
-    drain_rate = client.read_holding_registers(2)[0]
+    level = client.read_holding_registers(TAG.TAG_LIST[TAG.TANK_LEVEL]["id"])[0]
+    flow_rate = client.read_holding_registers(TAG.TAG_LIST[TAG.TANK_FLOW_RATE]["id"])[0]
+    drain_rate = client.read_holding_registers(TAG.TAG_LIST[TAG.TANK_DRAIN_RATE]["id"])[0]
     values = {'level': level, 'flow_rate': flow_rate, 'drain_rate': drain_rate}
     return jsonify(values)
 
@@ -39,7 +37,7 @@ def monitor():
 def flowUpdate():
     data = request.json
     value = data.get('value')
-    client.write_single_register(1, int(value))
+    client.write_single_register(TAG.TAG_LIST[TAG.TANK_FLOW_RATE]["id"], int(value))
     return 'OK', 200
 
 # Funzione per aggiornare la velocità di deflusso
@@ -47,12 +45,12 @@ def flowUpdate():
 def drainUpdate():
     data = request.json
     value = data.get('value')
-    client.write_single_register(2, int(value))
+    client.write_single_register(TAG.TAG_LIST[TAG.TANK_DRAIN_RATE]["id"], int(value))
     return 'OK', 200
 
 if __name__ == "__main__":
     try:
-        client = ModbusClient(SERVER_HOST, SERVER_PORT)
+        client = ModbusClient(Controllers.PLC_CONFIG[1]["ip"], Controllers.PLC_CONFIG[1]["port"])
         client.open()
         app.run(debug=True)
     except Exception as e:
