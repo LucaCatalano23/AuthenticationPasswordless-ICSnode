@@ -4,37 +4,26 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>HMI</title>
+        <title>Passwordless Authentication with WebAuthn</title>
     </head>
+
     <body>
-        <h1>CONTROL PANEL</h1>
-        
-        <h3>WATER LEVEL</h3>
-        <div id="level"></div>
-        <h3>FLOW RATE</h3>
-        <div id="flow_rate"></div>
-        <input type="text" id="flow_box" name="flow_box" default:"">
-        <button type="button" id="flowButton">Update</button>
-        <h3>DRAIN RATE</h3>
-        <div id="drain_rate"></div>
-        <input type="text" id="drain_box" name="drain_box" default:"">
-        <button type="button" id="drainButton">Update</button>
+        <div class="container">
+            <h1 class="title">Passwordless Authentication with WebAuthn</h1>
+            <div id="registrationResult" class="result"></div>
 
-        <h2>FLOW</h2>
-        <label for="flow" class="switch">
-            <input id="flow" name="flow" type="checkbox">
-            <span class="slider round"></span> 
-        </label>
-        <br><br>
-        <h2>DRAIN</h2>
-        <label for="drain" class="switch">
-            <input id="drain" name="drain" type="checkbox">
-            <span class="slider round"></span>
-        </label>
+            <form id="registrationForm">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" default:"">
+                <button type="button" id="registerButton">Register</button>
+            </form>
+            
+            <div id="authenticationResult" class="result"></div>
+            <button type="button" id="authenticateButton">Authenticate</button>
+        </div>
 
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="/static/checkbox.js"></script>
-        <script src="/static/update_values.js"></script>
-        <script src="/static/update_monitor.js"></script>
+        <script src="https://unpkg.com/cbor-js"></script>
+        <script src="/static/registration.js"></script>
+        <script src="/static/authentication.js"></script>
     </body>
 </html>
